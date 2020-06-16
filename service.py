@@ -7,13 +7,30 @@ import time
 
 class Service(object):
 
-    def parse_html(self):
+    def parse_whats_new(self):
+        resource = req.urlopen(self)
+        soup = BeautifulSoup(resource, "html.parser")
+        result = soup.find_all("a", tabindex="200")
+        return result
+
+    def get_page_url(self, base_url):
+        href_list = []
+        text_list = []
+        for link in self:
+            href = link.get('href')
+            joined_url = urljoin(base_url, href)
+            href_list.append(joined_url)
+            text = link.get_text()
+            text_list.append(text)
+        return href_list, text_list
+
+    def parse_page(self):
         resource = req.urlopen(self)
         soup = BeautifulSoup(resource, "html.parser")
         result = soup.select("a[href]")
         return result
 
-    def get_href(self, base_url):
+    def get_pdf_url(self, base_url):
         href_list = []
         text_list = []
         for link in self:
