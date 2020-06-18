@@ -1,4 +1,6 @@
 import urllib.request as req
+import datetime
+import csv
 
 from service import Service
 
@@ -21,11 +23,13 @@ class Controller(object):
         page_url_list, page_name_list = \
             Service.get_page_url(parsed_whats_new_html, base_url)
 
-        # 各審議会・委員会の資料ページから，aタグを取得する。
-        # 0番目の要素「新着情報へのurl」と最後の要素「過去の情報一覧へのurl」を省いてfor文を回す。
-        # for i in range(1, len(page_url_list)-1):
-        for i in range(1, 2):
-            url = page_url_list[i]
+        # 前回の新着情報ページとの差分を抽出する
+        diff = Service.comp_page_url_list(page_url_list)
+        print(diff)
+
+        # 前回差分のみの各審議会・委員会の資料ページから，aタグを取得する。
+        for i in range(len(diff)):
+            url = diff[i]
             base_url = url
             request = req.Request(url, headers=headers)
             parsed_html = Service.parse_page(request)
@@ -39,3 +43,10 @@ class Controller(object):
 
             # PDFファイルのダウンロード
             Service.pdf_download(pdf_url_list, pdf_filename_list, headers)
+
+        # 現在の新着情報ページの資料ページ一覧を保存する
+        dt = datetime.datetime.now()
+        with open('C:/Users/naozi/scraping/dlc/' + dt.strftime('%Y-%m-%d_%H-%M-%S')
+                  + '.csv', 'w') as f:
+            writer = csv.writer(f, lineterminator="")
+            writer.writerow(page_url_list)

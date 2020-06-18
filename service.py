@@ -3,6 +3,7 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 import urllib
 import time
+import csv
 
 
 class Service(object):
@@ -61,3 +62,12 @@ class Service(object):
                 f.write(urllib.request.urlopen(request).read())
             time.sleep(2)
         print("指定サイトの全てのpdfファイルのダウンロードが完了しました！")
+
+    def comp_page_url_list(self):
+        before_page_url_list = []
+        with open('C:/Users/naozi/scraping/dlc/2020-06-18_16-40-25.csv', 'r') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                before_page_url_list = row
+        diff = list(set(self) - set(before_page_url_list))
+        return diff
