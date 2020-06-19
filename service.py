@@ -7,7 +7,7 @@ import csv
 import os
 
 
-class ServiceWhatsNew(object):
+class WhatsNewService(object):
 
     def parse_whats_new(self):
         resource = req.urlopen(self)
@@ -15,7 +15,7 @@ class ServiceWhatsNew(object):
         result = soup.find_all("a", tabindex="200")
         return result
 
-    def get_url(self, base_url):
+    def get_page_url(self, base_url):
         href_list = []
         text_list = []
         for link in self:
@@ -37,7 +37,18 @@ class ServiceWhatsNew(object):
         return diff_url_list
 
 
-class ServicePdfDl(ServiceWhatsNew):
+class PdfDlService(object):
+
+    def get_pdf_url(self, base_url):
+        href_list = []
+        text_list = []
+        for link in self:
+            href = link.get('href')
+            joined_url = urljoin(base_url, href)
+            href_list.append(joined_url)
+            text = link.get_text()
+            text_list.append(text)
+        return href_list, text_list
 
     def parse_page(self):
         resource = req.urlopen(self)
